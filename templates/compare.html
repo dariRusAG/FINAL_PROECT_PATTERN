@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <title>Сравнить выкройки</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+
+<div class=menu>
+    <ul>
+        <li><a href={{url_for("personal")}}>Личный кабинет</a></li>
+        <li><a href={{url_for("search")}}>Поиск выкроек</a></li>
+        <li class=active><a class=active_scheme>Сравнить</a></li>
+    </ul>
+</div>
+
+<div class=key>
+ <form action="{{url_for('search')}}" method="post">
+        <input type="submit"
+               name="search_h" value="Вернуться на страницу поиска" class="key_button">
+        <input type="text" name="pat" value={{pat}} hidden>
+        {% for i in cat %}
+        <input type="text" name="cat" value={{i}} hidden>
+        {% endfor %}
+        <input type="text" name="detail_start" value={{detail_start}} hidden>
+        <input type="text" name="detail_end" value={{detail_end}} hidden>
+    </form>
+</div>
+
+<form action="{{url_for('scheme')}}#openModal" method="post">
+        {% if pattern_list == [] %} Список для сравнения пуст.
+        {% elif len(pattern_list) > 6 %} Выбрано больше 6 выкроек.
+        {% else %}
+        <input type="submit" name="build" value="Ввести параметры для построения" class="key_button">
+    <p>
+        {{ macros.render_compare_pattern(df_compare, pattern_list, len, str, int_list) }}
+        {% endif %}
+    </p>
+    <input type="text" name="pat" value={{pat}} hidden>
+    {% for i in cat %}
+    <input type="text" name="cat" value={{i}} hidden>
+    {% endfor %}
+    <input type="text" name="detail_start" value={{detail_start}} hidden>
+    <input type="text" name="detail_end" value={{detail_end}} hidden>
+</form>
+</body>
+</html>

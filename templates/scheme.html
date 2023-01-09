@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <title>Схема выкройки</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+
+<div class=menu>
+    <ul>
+        <li><a href={{url_for("personal")}}>Личный кабинет</a></li>
+        <li><a href={{url_for("search")}}>Поиск выкроек</a></li>
+        <li class="active"><a href={{url_for("scheme")}} class=active_scheme>Схема</a></li>
+    </ul>
+</div>
+
+<div class=key>
+    <form action="{{url_for('search')}}" method="post">
+        <input type="submit"
+               name="search_h" value="Вернуться на страницу поиска" class="key_button">
+
+        <input type="text" name="pat" value={{pat}} hidden>
+        {% for i in cat %}
+        <input type="text" name="cat" value={{i}} hidden>
+        {% endfor %}
+        <input type="text" name="detail_start" value={{detail_start}} hidden>
+        <input type="text" name="detail_end" value={{detail_end}} hidden>
+    </form>
+
+    <form action="{{url_for('scheme')}}#openModal" method="get">
+        <input type="button" name="build" value="Изменить параметры"
+               onclick="window.location.href = 'scheme#openModal'" class="key_button">
+        <input type="text" name="pattern" value="{{pattern_id}}" hidden>
+
+    </form>
+</div>
+
+{% if error_param and not pattern %}
+<br>Введены некорректные данные.
+{% endif %}
+
+<div class="scheme_view">
+    {{ macros.render_data_scheme(pattern, len, user_measure, measure_full_name) }}
+</div>
+
+<div id="openModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Мерки выкройки "{{ pattern_name }}"</h3>
+                <a href="#close" title="Close" class="close">×</a>
+            </div>
+
+            <form action="{{url_for('scheme')}}#close" method="post">
+                <div class="modal-body">
+                    <table class="table_r">
+                        {% if user_measure == [] %}
+                        {% for name, full_name in zip(measure_name, measure_full_name) %}
+                        {{ macros.render_measure(name, full_name, param_user, len, pattern_id) }}
+                        {% endfor %}
+                        {% else %}
+                        {% for name, full_name, measure in zip(measure_name, measure_full_name, user_measure) %}
+                        {{ macros.render_user_measure(name, full_name, measure, pattern_id) }}
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+                </div>
+
+                <input type="text" name="pat" value={{pat}} hidden>
+                {% for i in cat %}
+                <input type="text" name="cat" value={{i}} hidden>
+                {% endfor %}
+
+                <input type="text" name="detail_start" value={{detail_start}} hidden>
+                <input type="text" name="detail_end" value={{detail_end}} hidden>
+
+                <div class=key_modal>
+                    <input type="submit" name="build_scheme" value="Построить" class="key_button_modal">
+                </div>
+            </form>
+
+            <div class=key_modal>
+                <input type="submit" value="Отменить изменения"
+                       onclick="window.location.reload()" class="key_button_modal">
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+</body>
+</html>

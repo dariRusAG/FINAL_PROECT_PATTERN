@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<!--Макрос для вывода информации о пользователе-->
+{% macro render_data_user(data_user, len) %}
+<table>
+    {% for i in range(len(data_user)) %}
+    {% for name in data_user.dtypes.index %}
+    <tr>
+        <td>{{ name }}:</td>
+        <td>
+            <input type="text" name="data_user" class="write_personal"
+                   placeholder="{{ data_user.loc[i, name] }}" value="{{ data_user.loc[i, name] }}">
+
+        {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+{% endmacro %}
+
+<!--Макрос для вывода параметров пользователя-->
+{% macro render_param_user(param_user, error_param, len) %}
+<table>
+    {% for i in range(len(param_user)) %}
+    <tr>
+        <td>
+            {{ param_user.loc[i, "param_full_name"] }}
+            ({{ param_user.loc[i, "param_name"] }}):
+        </td>
+        <td>
+            {% if error_param[i] != 'q' and error_param != [] %}
+            <input type="text" name="param_user" class="error_personal"
+                   placeholder={{param_user.loc[i,"param_value"]}} value={{error_param[i]}}>
+            {% else %}
+            <input type="text" name="param_user" class="write_personal"
+                   {% if param_user.loc[i,"param_value"] != '' %}
+            placeholder={{param_user.loc[i,"param_value"]}} value={{param_user.loc[i,"param_value"]}}
+            {% else %} placeholder='' value='' {% endif %}>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endmacro %}
+
+<!--Макрос генерации формы выбора-->
+{% macro render_block_choice(category, choice, len) %}
+{% for i in range(len(category)) %}
+<p>
+    {% set value=category.loc[i, "category_name"] %}
+    {% if value in choice %}
+    <input type="checkbox" name="category" value="{{ value }}" checked>
+    {% else %}
+    <input type="checkbox" name="category" value="{{ value }}">
+    {% endif %}
+    {{ value }}
+</p>
+{% endfor %}
+{% endmacro %}
+
+<!--Макрос для вывода выкроек-->
+{% macro render_pattern(pattern, len, str, int_list, pat) %}
+{% for i in range(len(pattern)) %}
+<div class="block">
+    <div class="data">
+        {% for name in pattern.dtypes.index %}
+        {% if name != "ID" %}
+        {% if name == "amount" %}
+        <p>
+            <b>Количество деталей:</b>
+            {% else %}
+            <b>{{ name }}:</b>
+            {% endif %}
+            {% if name == "Мерки" %}
+            {% set value = int_list(str(pattern.loc[i, name]).split(",")) %}
+
+            {% for elem in value %}
+
+            {% if elem == value[-1] %}
+            {{ elem }}.
+            {% else %}
+            {{ elem }},
+            {% endif %}
+
+            {% endfor %}
+
+            {% else %}
+            {{ pattern.loc[i, name] }}
+            {% endif %}
+        </p>
+
+        {% endif %}
+        {% endfor %}
+
+        <label class="check_pattern">
+            {% if pat == 'q' %}
+            <input type="radio" name="pattern"
+                   value="{{ pattern.loc[i, 'ID'] }}"
+                   {% if pattern.loc[i, 'ID'] == pattern.values[0][0] %} checked {% endif %}>Выбрать для построения
+            {% else %}
+            <input type="radio" name="pattern"
+                   value="{{ pattern.loc[i, 'ID'] }}"
+                   {% if pattern.loc[i, 'ID'] == pat %} checked {% endif %}>Выбрать для построения
+            {% endif %}
+        </label>
+
+        <label class="check_pattern">
+            <input type="checkbox" name="pattern_list"
+                   value="{{ pattern.loc[i, 'ID'] }}">Добавить в сравнение
+        </label>
+    </div>
+</div>
+{% endfor %}
+{% endmacro %}
+
+<!--Макрос генерации информации о выбранных категориях-->
+{% macro render_info_choice(category, choice, len) %}
+{% if len(choice) == 0 %} ничего не выбрано.
+{% else %}
+{% for i in range(len(category)) %}
+{% set value = category.loc[i, "category_name"] %}
+{% if value in choice %}
+{% if value == choice[-1] %}
+{{ value }}.
+{% else %}
+{{ value }},
+{% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
+<!--Макрос для вывода данных схемы выкройки-->
+{% macro render_data_scheme(pattern, len, user, name_measure) %}
+{% for i in range(len(pattern)) %}
+<div class="block">
+    <img src="/static/image/dress-pattern.jpg" alt="">
+    <div class="data">
+        {% for name in pattern.dtypes.index %}
+        <p>
+            <b>{{ name }}:</b>
+            {{ pattern.loc[i, name] }}
+            {% endfor %}
+        </p>
+
+        {% for elem in range(len(user)) %}
+        <p>
+            <b>{{ name_measure[elem] }}:</b>
+            {{ user[elem] }}
+        </p>
+        {% endfor %}
+        <a href="/static/image/dress-pattern.jpg" download>
+            <input type="button" value="Скачать изображение" class="key_button">
+        </a>
+    </div>
+</div>
+{% endfor %}
+{% endmacro %}
+
+<!--Макрос для вывода мерок выкройки в модальном окне-->
+{% macro render_measure(name, full_name, param_user, len, pattern_id) %}
+    <tr>
+        <td class="td_t">
+            {{ full_name }}
+            ({{ name.strip() }}):
+        </td>
+
+        <td class="td_t">
+            {% for i in range(len(param_user)) %}
+            {% set value = param_user.loc[i, "param_name"] %}
+            {% if value == name.strip() %}
+
+            <input type="text" name="measure" class="write_personal"
+                   value={{param_user.loc[i,"user_param"]}} placeholder={{param_user.loc[i,"user_param"]}}>
+            {% endif %}
+            {% endfor %}
+
+            {% if name.strip() not in param_user["param_name"].unique() %}
+            <input type="text" name="measure" class="write_none"
+                   value="">
+            {% endif %}
+        </td>
+    </tr>
+    <label>
+        <input hidden type="text" name="pattern" value={{pattern_id}}>
+    </label>
+{% endmacro %}
+
+<!--Макрос для вывода введенных мерок выкройки в модальном окне-->
+{% macro render_user_measure(name, full_name, measure, pattern_id) %}
+    <tr>
+        <td class="td_t">
+            {{ full_name }}
+            ({{ name.strip() }}):
+        </td>
+
+        <td class="td_t">
+            {% if measure == '' or measure.isdigit() == False %}
+            <input type="text" name="measure" class="write_none"
+                   value="">
+            {% else %}
+            <input type="text" name="measure" class="write_personal"
+                   value={{measure}} placeholder={{measure}}>
+            {% endif %}
+        </td>
+    </tr>
+    <label>
+        <input hidden type="text" name="pattern" value={{pattern_id}}>
+    </label>
+{% endmacro %}
+
+<!--Макрос генерации выкроек для сравнения-->
+{% macro render_compare_pattern(df_compare, pattern_list, len, str, int_list) %}
+<table class="table_t">
+    {% for name in df_compare.dtypes.index %}
+    <tr>
+        <td class="td_t">
+            {% if name != "ID" %}
+            {% if name == "amount" %}
+            <b>Количество деталей:</b>
+            {% else %}
+            <b>{{ name }}:</b>
+            {% endif %}
+        </td>
+
+        {% for i in range(len(pattern_list)) %}
+
+        {% if name == "Мерки" %}
+        {% set value = int_list(str(df_compare.loc[i, name]).split(",")) %}
+        <td class="td_t">
+
+            {% for elem in value %}
+            {{ elem }} <br>
+            {% endfor %}
+            <br>
+            <div>
+                <label class="check_pattern">
+                <input type="radio" name="pattern" value="{{ pattern_list[i] }}"
+                       {% if i == 0 %} checked {% endif %}>Выбрать для <br>построения
+            </label>
+            </div>
+        </td>
+        {% else %}
+
+        <td class="td_t">
+            {{ df_compare.loc[i, name] }}
+            {% endif %}
+
+            {% endfor %}
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+
+</table>
+{% endmacro %}

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <title>Поиск выкроек</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+
+<div class=menu>
+    <ul>
+        <li><a href={{url_for("personal")}}>Личный кабинет</a></li>
+        <li class=active><a href={{url_for("search")}}>Поиск выкроек</a></li>
+    </ul>
+</div>
+
+<div class="catalog">
+    <div class="block_choice">
+        <form action="{{url_for('search')}}" method="post">
+            <p><b>Категории:</b></p>
+            {{ macros.render_block_choice(category, choice, len) }}
+            <p><b>Детали:</b></p>
+                От <input type="text" name="int_start" class="write" value="{{detail_start}}" placeholder="{{min_detail}}">
+            <p>
+                До <input type="text" name="int_end" class="write" value="{{detail_end}}" placeholder="{{max_detail}}">
+            </p>
+            <div class=key_search>
+                <input type="submit" name="search" value="Показать" class="key_button_search">
+                <input type="submit" name="clear" value="Очистить" class="key_button_search">
+            </div>
+        </form>
+    </div>
+
+    <div class="info">
+        <b>Категории:</b>
+        {{ macros.render_info_choice(category, choice, len) }}
+        <b>Количество деталей:</b>
+         от {% if detail_start == min_detail %}
+        минимального ({{ min_detail }})
+        {% else %} {{ detail_start }}
+        {% endif %}
+
+        до {% if detail_end == max_detail %}
+        максимального ({{ max_detail }}).
+        {% else %} {{ detail_end }}.
+        {% endif %}
+        <b>Найдены выкройки:</b>
+        {% if len(pattern.index) == 0 %} ничего не найдено.
+        {% else %}
+        {{ len(pattern.index) }}.
+        {% endif %}
+    </div>
+
+    <form action="{{url_for('scheme')}}#openModal" method="post">
+        <div class="vl">
+            <input type="submit" name="build" value="Ввести параметры для построения" class="vr">
+            <input type="submit" name="compare" value="Сравнить выкройки" class="vr">
+        </div>
+
+        <input type="text" name="pat" value={{pat}} hidden>
+
+        {% for i in choice %}
+               <input type="text" name="cat" value={{i}} hidden>
+        {% endfor %}
+        <input type="text" name="detail_start" value={{detail_start}} hidden>
+        <input type="text" name="detail_end" value={{detail_end}} hidden>
+
+        <div class="books_view">
+            {{ macros.render_pattern(pattern, len, str, int_list, pat) }}
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

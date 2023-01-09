@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+    <title>Личный кабинет</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+
+<div class=menu>
+    <ul>
+        <li class=active><a href={{url_for("personal")}}>Личный кабинет</a></li>
+        <li><a href={{url_for("search")}}>Поиск выкроек</a></li>
+    </ul>
+</div>
+
+<div class=block_personal>
+    <form action="{{url_for('personal')}}" method="post">
+        <p><b>Личные данные</b></p>
+        {{ macros.render_data_user(data_user, len) }}
+        <p><b>Мерки тела</b></p>
+        {{ macros.render_param_user(param_user, error_param, len) }}
+
+        <div class=key>
+            <input type="submit" name="save" value="Сохранить изменения" class="key_button">
+            <input type="button" value="Отменить изменения" class="key_button"
+                   onclick="window.location='{{url_for('personal')}}'">
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
