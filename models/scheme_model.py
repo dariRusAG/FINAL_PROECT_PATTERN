@@ -43,7 +43,7 @@ def get_param_user(conn, user_id):
         user_param.[param_value] AS user_param
     FROM param 
     INNER JOIN user_param ON param.param_id = user_param.param_id
-    WHERE user_id = {user_id}
+    WHERE user_id = {user_id} AND user_param != ''
     ''', conn)
 
 

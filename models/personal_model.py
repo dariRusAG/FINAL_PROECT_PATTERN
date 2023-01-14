@@ -45,3 +45,12 @@ def update_param_user(conn, user_id, elem, new_param_user):
     ''', {"user_id": user_id, "param": new_param_user[elem], "i": elem + 1})
 
     return conn.commit()
+
+
+def get_param(conn, user_id):
+    return pandas.read_sql(f'''
+    SELECT param_name
+    FROM param 
+    INNER JOIN user_param ON param.param_id = user_param.param_id
+    WHERE user_id = {user_id}
+    ''', conn)

@@ -61,7 +61,7 @@
                         {% endfor %}
                         {% else %}
                         {% for name, full_name, measure in zip(measure_name, measure_full_name, user_measure) %}
-                        {{ macros.render_user_measure(name, full_name, measure, pattern_id) }}
+                        {{ macros.render_user_measure(name, full_name, measure, pattern_id, int) }}
                         {% endfor %}
                         {% endif %}
                     </table>

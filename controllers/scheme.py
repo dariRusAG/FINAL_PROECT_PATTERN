@@ -33,7 +33,20 @@ def scheme():
         user_measure = request.form.getlist('measure')
 
         for elem in range(len(user_measure)):
-            if (user_measure[elem].isdigit() is False) or (user_measure[elem] == ''):
+            if user_measure[elem].isdigit() is True:
+                if measure_name[elem] == 'ВБ':
+                    if 20 > int(user_measure[elem]) or int(user_measure[elem]) > 25:
+                        error_param.append(elem)
+                elif measure_name[elem] == 'ОБ':
+                    if 70 > int(user_measure[elem]) or int(user_measure[elem]) > 130:
+                        error_param.append(elem)
+                elif measure_name[elem] == 'ДИ':
+                    if 30 > int(user_measure[elem]) or int(user_measure[elem]) > 120:
+                        error_param.append(elem)
+                elif measure_name[elem] == 'ОТ':
+                    if 40 > int(user_measure[elem]) or int(user_measure[elem]) > 100:
+                        error_param.append(elem)
+            else:
                 error_param.append(elem)
 
         if not error_param:
@@ -74,6 +87,7 @@ def scheme():
         cat=cat,
         detail_start=detail_start,
         detail_end=detail_end,
-        pat=pat
+        pat=pat,
+        int=int
     )
     return html
